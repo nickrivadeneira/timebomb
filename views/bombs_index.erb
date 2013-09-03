@@ -1,0 +1,21 @@
+<h1>Bombs</h1>
+<%= @bombs.count %> bombs.
+
+<table>
+  <tr>
+    <td>ID</td>
+    <td>Created</td>
+    <td>URL</td>
+    <td>Timestamp</td>
+    <td>Params</td>
+  </tr>
+    <% @bombs.each do |bomb| %>
+      <tr>
+        <td><%= bomb.id %></td>
+        <td><%= bomb.created_at %></td>
+        <td><%= bomb.url %></td>
+        <td><%= bomb.timestamp %></td>
+        <td><%= bomb.request_params %></td>
+      </tr>
+    <% end %>
+</table>
