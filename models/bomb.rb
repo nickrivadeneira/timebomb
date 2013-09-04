@@ -1,12 +1,7 @@
 require 'httparty'
-require 'origin'
-require 'backburner'
 
 class Bomb
   include Mongoid::Document
-  include Origin::Queryable
-  include Backburner::Performable
-  queue "bomb-jobs"
 
   field :url,            type: String
   field :request_params, type: String

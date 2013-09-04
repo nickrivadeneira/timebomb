@@ -9,8 +9,8 @@ class Timebomb < Sinatra::Base
   post '/bombs/new' do
     begin
       data = JSON.parse(request.env["rack.input"].read)
-      logger.info data
-      bomb = Bomb.new(data)
+      puts data
+      bomb = Bomb.new(url: data["url"], request_params: data["request_params"], timestamp: data["timestamp"])
 
       if bomb.save
         logger.info bomb.to_json
@@ -18,17 +18,17 @@ class Timebomb < Sinatra::Base
         {
           successful: true,
           bomb: {
-            id: bomb.id,
             url: bomb.url,
+            request_params: bomb.request_params,
             timestamp: bomb.timestamp
           }
         }.to_json
       else
-        raise
+        raise RuntimeError
       end
     rescue => ex
-      logger.info ex.class
-      {successful: false, error: ex.class}.to_json
+      puts ex
+      {successful: false, error: ex.class.to_s}.to_json
     end
   end
 
