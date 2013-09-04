@@ -1,7 +1,7 @@
 class Timebomb < Sinatra::Base
   # Index
   get '/bombs' do
-    bombs = Bomb.all(:order => :created_at.desc)
+    bombs = Bomb.desc(:created_at).all
     {bombs: bombs}.to_json
   end
 
@@ -34,7 +34,7 @@ class Timebomb < Sinatra::Base
 
   # Show
   get '/bombs/:id' do
-    if (bomb = Bomb.get(params[:id]))
+    if (bomb = Bomb.find(params[:id]))
       bomb.to_json
     else
       404
@@ -43,7 +43,7 @@ class Timebomb < Sinatra::Base
 
   # Delete
   delete '/bombs/:id' do
-    if (bomb = Bomb.get(params[:id]))
+    if (bomb = Bomb.find(params[:id]))
       response = bomb.to_json
       bomb.destroy
       response

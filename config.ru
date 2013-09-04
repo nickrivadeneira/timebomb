@@ -1,6 +1,8 @@
+$LOAD_PATH << '.'
 require 'rubygems'
 require 'bundler'
-Bundler.require
-require './timebomb'
-require './models/init'
+require 'sinatra'
+require 'timebomb'
+require 'json'
+require 'models/init'
 run Timebomb

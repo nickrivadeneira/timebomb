@@ -1,16 +1,16 @@
 require 'httparty'
-require 'json'
 
 class Bomb
-  include DataMapper::Resource
-  property :id,             Serial
-  property :created_at,     DateTime
-
-  property :url,            String
-  property :request_params, Text
-  property :timestamp,      Integer
+  include Mongoid::Document
+  field :url,            type: String
+  field :request_params, type: String
+  field :timestamp,      type: Integer
 
   def send_request
-    HTTParty.post(self.url, body: self.request_params, headers: {'Content-Type' => 'application/json'})
+    self.class.send_request self.url, self.request_params
+  end
+
+  def self.send_request url, request_params
+    HTTParty.post(url, body: request_params, headers: {'Content-Type' => 'application/json'})
   end
 end
