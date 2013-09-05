@@ -9,5 +9,6 @@ gem 'stalker'
 
 group :test do
   gem 'rspec'
+  gem 'mongoid-rspec'
   gem 'rack-test', :require => 'rack/test'
 end

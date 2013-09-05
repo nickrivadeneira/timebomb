@@ -3,6 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
+  config.include Mongoid::Matchers
 
   # Clean/Reset Mongoid DB prior to running each test.
   config.before(:each) do

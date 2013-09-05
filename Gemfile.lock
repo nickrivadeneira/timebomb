@@ -24,6 +24,10 @@ GEM
       moped (~> 1.2)
       origin (~> 1.0)
       tzinfo (~> 0.3.22)
+    mongoid-rspec (1.8.2)
+      mongoid (>= 3.0.1)
+      rake
+      rspec (>= 2.9)
     moped (1.5.0)
     multi_json (1.7.7)
     multi_xml (0.5.4)
@@ -33,6 +37,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rake (10.1.0)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -59,6 +64,7 @@ DEPENDENCIES
   httparty
   json
   mongoid
+  mongoid-rspec
   rack-test
   rspec
   sinatra
