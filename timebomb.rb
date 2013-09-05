@@ -26,9 +26,11 @@ class Timebomb < Sinatra::Base
       else
         raise RuntimeError
       end
+    rescue JSON::ParserError
+      {successful: false, error: "Invalid request paramaters."}.to_json
     rescue => ex
       puts ex
-      {successful: false, error: ex.class.to_s}.to_json
+      {successful: false, error: "Internal server error."}.to_json
     end
   end
 

@@ -1,8 +1,8 @@
-$LOAD_PATH << '.'
-require 'rubygems'
-require 'bundler'
-require 'sinatra'
-require 'timebomb'
-require 'json'
-require 'models/init'
-run Timebomb
+#!/usr/bin/env rackup
+# encoding: utf-8
+
+require File.expand_path("../config/boot.rb", __FILE__)
+
+run Rack::URLMap.new({
+  "/" => Timebomb
+})
