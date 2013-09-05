@@ -27,8 +27,18 @@ describe Timebomb do
         post '/bombs/new', body, {'Content-Type' => 'application/json'}
 
         expect(last_response).to be_ok
-        expect(JSON.parse(last_response.body)['successful']).to be_true
-        expect(JSON.parse(last_response.body)['bomb']['timestamp']).to eq timestamp
+
+        body = JSON.parse(last_response.body)
+        expect(body['successful']).to be_true
+        expect(body['bomb']['timestamp']).to eq timestamp
+      end
+    end
+
+    context 'with no JSON' do
+      it 'does not create a new bomb' do
+        post '/bombs/new'
+
+        expect(last_response.status).to eq 400
       end
     end
   end

@@ -9,7 +9,6 @@ class Timebomb < Sinatra::Base
   post '/bombs/new' do
     begin
       data = JSON.parse(request.env["rack.input"].read)
-      puts data
       bomb = Bomb.new(url: data["url"], request_params: data["request_params"], timestamp: data["timestamp"])
 
       if bomb.save
@@ -18,6 +17,7 @@ class Timebomb < Sinatra::Base
         {
           successful: true,
           bomb: {
+            _id: bomb._id,
             url: bomb.url,
             request_params: bomb.request_params,
             timestamp: bomb.timestamp
@@ -27,10 +27,10 @@ class Timebomb < Sinatra::Base
         raise RuntimeError
       end
     rescue JSON::ParserError
-      {successful: false, error: "Invalid request parameters."}.to_json
+      400
     rescue => ex
       puts ex
-      {successful: false, error: "Internal server error."}.to_json
+      500
     end
   end
 
