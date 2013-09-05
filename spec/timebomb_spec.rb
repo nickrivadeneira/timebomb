@@ -11,8 +11,7 @@ describe 'Timebomb' do
 
   it "should return bombs" do
     get '/bombs'
-    puts last_response.inspect
     last_response.should be_ok
-    last_response.body.should == '{}'
+    last_response.body.should == {bombs: []}.to_json
   end
 end
