@@ -66,5 +66,13 @@ describe Timebomb do
         expect(body['timestamp']).to eq(bomb.timestamp)
       end
     end
+
+    context 'non-existing bomb' do
+      it 'returns 404' do
+        get '/bombs/foobar'
+
+        expect(last_response.status).to eq 404
+      end
+    end
   end
 end

@@ -36,9 +36,9 @@ class Timebomb < Sinatra::Base
 
   # Show
   get '/bombs/:id' do
-    if (bomb = Bomb.find(params[:id]))
-      bomb.to_json
-    else
+    begin
+      Bomb.find(params[:id]).to_json
+    rescue Mongoid::Errors::DocumentNotFound
       404
     end
   end
