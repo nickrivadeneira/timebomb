@@ -42,4 +42,29 @@ describe Timebomb do
       end
     end
   end
+
+  describe 'show' do
+    context 'existing bomb' do
+      let(:bomb_params){
+        {
+          url:            'http://example.com',
+          request_params: {foo: 1, bar: 2}.to_json,
+          timestamp:      Time.now.to_i
+        }
+      }
+      let(:bomb){Bomb.create(bomb_params)}
+
+      it 'returns the bomb' do
+        get '/bombs/' + bomb._id.to_s
+
+        expect(last_response).to be_ok
+
+        body = JSON.parse(last_response.body)
+        expect(body['_id']).to eq(bomb._id.to_s)
+        expect(body['url']).to eq(bomb.url)
+        expect(body['request_params']).to eq(bomb.request_params)
+        expect(body['timestamp']).to eq(bomb.timestamp)
+      end
+    end
+  end
 end
