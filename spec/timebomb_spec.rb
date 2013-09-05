@@ -21,6 +21,23 @@ describe Timebomb do
         expect(last_response.body).to eq({bombs: []}.to_json)
       end
     end
+
+    context 'when 5 bombs exist' do
+      before do
+        5.times do
+          Bomb.create(bomb_params)
+        end
+      end
+
+      it 'returns all 5 bombs' do
+        get '/bombs'
+        expect(last_response).to be_ok
+
+        body = JSON.parse(last_response.body)
+        expect(body['bombs'].size).to eq 5
+        expect(body['bombs'].map{|b| b['_id']}.uniq.size).to eq 5
+      end
+    end
   end
 
   describe 'creation' do
