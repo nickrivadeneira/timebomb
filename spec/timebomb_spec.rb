@@ -6,7 +6,7 @@ describe 'Timebomb' do
   include Rack::Test::Methods
 
   def app
-    Sinatra::Application
+    Timebomb
   end
 
   it "should return bombs" do
