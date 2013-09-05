@@ -5,6 +5,14 @@ describe Timebomb do
     Timebomb
   end
 
+  let(:bomb_params){
+    {
+      url:            'http://example.com',
+      request_params: {foo: 1, bar: 2}.to_json,
+      timestamp:      Time.now.to_i
+    }
+  }
+
   describe 'index' do
     context 'when no resources exist' do
       it 'returns no bombs' do
@@ -18,19 +26,13 @@ describe Timebomb do
   describe 'creation' do
     context 'with valid JSON' do
       it 'creates a new bomb' do
-        timestamp = Time.now.to_i
-        body = {
-          url:            'http://example.com',
-          request_params: {foo: 1, bar: 2}.to_json,
-          timestamp:      timestamp
-        }.to_json
-        post '/bombs/new', body, {'Content-Type' => 'application/json'}
+        post '/bombs/new', bomb_params.to_json, {'Content-Type' => 'application/json'}
 
         expect(last_response).to be_ok
 
         body = JSON.parse(last_response.body)
         expect(body['successful']).to be_true
-        expect(body['bomb']['timestamp']).to eq timestamp
+        expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
       end
     end
 
@@ -45,13 +47,6 @@ describe Timebomb do
 
   describe 'show' do
     context 'existing bomb' do
-      let(:bomb_params){
-        {
-          url:            'http://example.com',
-          request_params: {foo: 1, bar: 2}.to_json,
-          timestamp:      Time.now.to_i
-        }
-      }
       let(:bomb){Bomb.create(bomb_params)}
 
       it 'returns the bomb' do
