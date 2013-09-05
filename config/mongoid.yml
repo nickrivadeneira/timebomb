@@ -4,3 +4,9 @@ development:
       database: timebomb_development
       hosts:
         - localhost:27017
+test:
+  sessions:
+    default:
+      database: timebomb_test
+      hosts:
+        - localhost:27017
