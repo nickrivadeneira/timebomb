@@ -1,17 +1,35 @@
-ENV['RACK_ENV'] = 'test'
+require 'spec_helper'
 
-require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
-
-describe 'Timebomb' do
-  include Rack::Test::Methods
-
+describe Timebomb do
   def app
     Timebomb
   end
 
-  it "should return bombs" do
-    get '/bombs'
-    last_response.should be_ok
-    last_response.body.should == {bombs: []}.to_json
+  describe 'index' do
+    context 'when no resources exist' do
+      it 'returns no bombs' do
+        get '/bombs'
+        expect(last_response).to be_ok
+        expect(last_response.body).to eq({bombs: []}.to_json)
+      end
+    end
+  end
+
+  describe 'creation' do
+    context 'with valid JSON' do
+      it 'creates a new bomb' do
+        timestamp = Time.now.to_i
+        body = {
+          url:            'http://example.com',
+          request_params: {foo: 1, bar: 2}.to_json,
+          timestamp:      timestamp
+        }.to_json
+        post '/bombs/new', body, {'Content-Type' => 'application/json'}
+
+        expect(last_response).to be_ok
+        expect(JSON.parse(last_response.body)['successful']).to be_true
+        expect(JSON.parse(last_response.body)['bomb']['timestamp']).to eq timestamp
+      end
+    end
   end
 end
