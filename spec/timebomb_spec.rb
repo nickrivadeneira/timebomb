@@ -84,5 +84,13 @@ describe Timebomb do
         expect(body['_id']).to eq bomb._id.to_s
       end
     end
+
+    context 'non-existing bomb' do
+      it 'returns 404' do
+        delete '/bombs/foo'
+
+        expect(last_response.status).to eq 404
+      end
+    end
   end
 end
