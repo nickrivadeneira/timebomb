@@ -17,6 +17,7 @@ describe Timebomb do
     context 'when no resources exist' do
       it 'returns no bombs' do
         get '/bombs'
+
         expect(last_response).to be_ok
         expect(last_response.body).to eq({bombs: []}.to_json)
       end
@@ -31,9 +32,8 @@ describe Timebomb do
 
       it 'returns all 5 bombs' do
         get '/bombs'
-        expect(last_response).to be_ok
 
-        body = JSON.parse(last_response.body)
+        expect(last_response).to be_ok and body = JSON.parse(last_response.body)
         expect(body['bombs'].size).to eq 5
         expect(body['bombs'].map{|b| b['_id']}.uniq.size).to eq 5
       end
@@ -45,9 +45,7 @@ describe Timebomb do
       it 'creates a new bomb' do
         post '/bombs/new', bomb_params.to_json, {'Content-Type' => 'application/json'}
 
-        expect(last_response).to be_ok
-
-        body = JSON.parse(last_response.body)
+        expect(last_response).to be_ok and body = JSON.parse(last_response.body)
         expect(body['successful']).to be_true
         expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
       end
@@ -69,9 +67,7 @@ describe Timebomb do
       it 'returns the bomb' do
         get '/bombs/' + bomb._id.to_s
 
-        expect(last_response).to be_ok
-
-        body = JSON.parse(last_response.body)
+        expect(last_response).to be_ok and body = JSON.parse(last_response.body)
         expect(body['_id']).to eq(bomb._id.to_s)
         expect(body['url']).to eq(bomb.url)
         expect(body['request_params']).to eq(bomb.request_params)
@@ -95,9 +91,7 @@ describe Timebomb do
       it 'deletes and returns the bomb' do
         delete '/bombs/' + bomb._id.to_s
 
-        expect(last_response).to be_ok
-
-        body = JSON.parse(last_response.body)
+        expect(last_response).to be_ok and body = JSON.parse(last_response.body)
         expect(body['_id']).to eq bomb._id.to_s
       end
     end
