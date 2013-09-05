@@ -70,4 +70,19 @@ describe Timebomb do
       end
     end
   end
+
+  describe 'delete' do
+    context 'existing bomb' do
+      let(:bomb){Bomb.create(bomb_params)}
+
+      it 'deletes and returns the bomb' do
+        delete '/bombs/' + bomb._id.to_s
+
+        expect(last_response).to be_ok
+
+        body = JSON.parse(last_response.body)
+        expect(body['_id']).to eq bomb._id.to_s
+      end
+    end
+  end
 end
