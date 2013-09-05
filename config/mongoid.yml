@@ -4,9 +4,14 @@ development:
       database: timebomb_development
       hosts:
         - localhost:27017
+  options:
+    allow_dynamic_fields: false
+
 test:
   sessions:
     default:
       database: timebomb_test
       hosts:
         - localhost:27017
+  options:
+    allow_dynamic_fields: false
