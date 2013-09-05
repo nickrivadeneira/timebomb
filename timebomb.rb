@@ -24,7 +24,7 @@ class Timebomb < Sinatra::Base
           }
         }.to_json
       else
-        raise RuntimeError
+        raise
       end
     rescue JSON::ParserError
       400
@@ -45,11 +45,11 @@ class Timebomb < Sinatra::Base
 
   # Delete
   delete '/bombs/:id' do
-    if (bomb = Bomb.find(params[:id]))
+    begin
+      bomb = Bomb.find(params[:id])
       response = bomb.to_json
-      bomb.destroy
-      response
-    else
+      bomb.destroy and response or 500
+    rescue Mongoid::Errors::DocumentNotFound
       404
     end
   end
