@@ -1,4 +1,8 @@
 class Timebomb < Sinatra::Base
+  before do
+    @user = User.authenticate_token params[:token] if params[:token] or halt 401
+  end
+
   # Index
   get '/bombs' do
     bombs = Bomb.desc(:created_at).all
