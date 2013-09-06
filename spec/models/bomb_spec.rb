@@ -49,12 +49,15 @@ describe Bomb do
     let(:resource){described_class.create(params)}
 
     describe 'method to send HTTP request' do
+      before{@request = resource.send_request}
       it 'sends a POST request' do
-        request = resource.send_request
+        expect(@request.request.http_method).to eq Net::HTTP::Post
+        expect(@request.request.path.host).to eq URI.parse(resource.url).host
+        expect(@request.request.options[:body]).to eq resource.request_params
+      end
 
-        expect(request.request.http_method).to eq Net::HTTP::Post
-        expect(request.request.path.host).to eq URI.parse(resource.url).host
-        expect(request.request.options[:body]).to eq resource.request_params
+      it 'destroys the bomb' do
+        expect(described_class.where(_id: resource._id).first).to be_nil
       end
     end
   end

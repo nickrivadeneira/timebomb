@@ -9,7 +9,8 @@ class Bomb
   belongs_to  :user
 
   def send_request
-    self.class.send_request self.url, self.request_params
+    request = self.class.send_request self.url, self.request_params
+    self.destroy and request
   end
 
   def self.send_request url, request_params
