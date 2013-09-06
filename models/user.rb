@@ -20,7 +20,7 @@ class User
   end
 
   def self.authenticate_token token
-    where(:'tokens.token' => token).first
+    where(:'tokens.token' => token).first if token.is_a? String
   end
 
   def encrypt_password
