@@ -80,7 +80,6 @@ describe Timebomb do
         post '/bombs/new?token=' + token, bomb_params.to_json, {'Content-Type' => 'application/json'}
 
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-        expect(body['successful']).to be_true
         expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
         expect(body['bomb']['user_id']).to eq user._id.to_s
       end
@@ -102,10 +101,10 @@ describe Timebomb do
         get '/bombs/' + bomb._id.to_s, token: token
 
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-        expect(body['_id']).to eq(bomb._id.to_s)
-        expect(body['url']).to eq(bomb.url)
-        expect(body['request_params']).to eq(bomb.request_params)
-        expect(body['timestamp']).to eq(bomb.timestamp)
+        expect(body['bomb']['_id']).to eq(bomb._id.to_s)
+        expect(body['bomb']['url']).to eq(bomb.url)
+        expect(body['bomb']['request_params']).to eq(bomb.request_params)
+        expect(body['bomb']['timestamp']).to eq(bomb.timestamp)
       end
     end
 
@@ -134,7 +133,7 @@ describe Timebomb do
         delete '/bombs/' + bomb._id.to_s, token: token
 
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-        expect(body['_id']).to eq bomb._id.to_s
+        expect(body['bomb']['_id']).to eq bomb._id.to_s
       end
     end
 
