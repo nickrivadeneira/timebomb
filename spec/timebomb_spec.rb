@@ -59,17 +59,17 @@ describe Timebomb do
 
     context 'when 5 bombs exist' do
       before do
-        5.times do
-          Bomb.create(bomb_params)
-        end
+        3.times{user.bombs.create(bomb_params)}
+        2.times{Bomb.create}
       end
 
-      it 'returns all 5 bombs' do
+      it 'returns only the user\'s 3 bombs' do
         get '/bombs', token: token
 
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-        expect(body['bombs'].size).to eq 5
-        expect(body['bombs'].map{|b| b['_id']}.uniq.size).to eq 5
+        expect(body['bombs'].size).to eq 3
+        expect(body['bombs'].map{|b| b['_id']}.uniq.size).to eq 3
+        expect(Bomb.count).to eq 5
       end
     end
   end
@@ -82,6 +82,7 @@ describe Timebomb do
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
         expect(body['successful']).to be_true
         expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
+        expect(body['bomb']['user_id']).to eq user._id.to_s
       end
     end
 
@@ -95,10 +96,9 @@ describe Timebomb do
   end
 
   describe 'show' do
-    context 'existing bomb' do
-      let(:bomb){Bomb.create(bomb_params)}
-
-      it 'returns the bomb' do
+    context 'authorized existing bomb' do
+      it 'returns the user\'s bomb' do
+        bomb = user.bombs.create(bomb_params)
         get '/bombs/' + bomb._id.to_s, token: token
 
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
@@ -106,6 +106,15 @@ describe Timebomb do
         expect(body['url']).to eq(bomb.url)
         expect(body['request_params']).to eq(bomb.request_params)
         expect(body['timestamp']).to eq(bomb.timestamp)
+      end
+    end
+
+    context 'unauthorized existing bomb' do
+      it 'returns 404' do
+        bomb = Bomb.create
+        get '/bombs/' + bomb._id.to_s, token: token
+
+        expect(last_response.status).to be 404
       end
     end
 
@@ -119,14 +128,22 @@ describe Timebomb do
   end
 
   describe 'delete' do
-    context 'existing bomb' do
-      let(:bomb){Bomb.create(bomb_params)}
-
+    context 'authorized existing bomb' do
       it 'deletes and returns the bomb' do
+        bomb = user.bombs.create bomb_params
         delete '/bombs/' + bomb._id.to_s, token: token
 
         expect(last_response).to be_ok and body = JSON.parse(last_response.body)
         expect(body['_id']).to eq bomb._id.to_s
+      end
+    end
+
+    context 'unauthorized existing bomb' do
+      it 'returns 404' do
+        bomb = Bomb.create
+        delete '/bombs/' + bomb._id.to_s, token: token
+
+        expect(last_response.status).to eq 404
       end
     end
 

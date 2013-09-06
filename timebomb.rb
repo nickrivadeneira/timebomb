@@ -7,7 +7,7 @@ class Timebomb < Sinatra::Base
 
   # Index
   get '/bombs' do
-    bombs = Bomb.desc(:created_at).all
+    bombs = @user.bombs
     {bombs: bombs}.to_json
   end
 
@@ -15,18 +15,16 @@ class Timebomb < Sinatra::Base
   post '/bombs/new' do
     begin
       data = JSON.parse(request.env['rack.input'].read)
-      bomb = Bomb.new(url: data['url'], request_params: data['request_params'], timestamp: data['timestamp'])
+      bomb = @user.bombs.new(url: data['url'], request_params: data['request_params'], timestamp: data['timestamp'])
 
       if bomb.save
-        logger.info bomb.to_json
-
         {
-          successful: true,
           bomb: {
             _id: bomb._id,
             url: bomb.url,
             request_params: bomb.request_params,
-            timestamp: bomb.timestamp
+            timestamp: bomb.timestamp,
+            user_id: bomb.user._id
           }
         }.to_json
       else
@@ -34,8 +32,7 @@ class Timebomb < Sinatra::Base
       end
     rescue JSON::ParserError
       400
-    rescue => ex
-      puts ex
+    rescue
       500
     end
   end
@@ -43,7 +40,7 @@ class Timebomb < Sinatra::Base
   # Show
   get '/bombs/:id' do
     begin
-      Bomb.find(params[:id]).to_json
+      @user.bombs.find(params[:id]).to_json
     rescue Mongoid::Errors::DocumentNotFound
       404
     end
@@ -52,7 +49,7 @@ class Timebomb < Sinatra::Base
   # Delete
   delete '/bombs/:id' do
     begin
-      bomb = Bomb.find(params[:id])
+      bomb = @user.bombs.find(params[:id])
       response = bomb.to_json
       bomb.destroy and response or 500
     rescue Mongoid::Errors::DocumentNotFound
