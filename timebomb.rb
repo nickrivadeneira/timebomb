@@ -14,11 +14,16 @@ class Timebomb < Sinatra::Base
   # Create
   post '/bombs/new' do
     begin
-      data = JSON.parse(request.env['rack.input'].read)
-      bomb = @user.bombs.new(url: data['url'], request_params: data['request_params'], timestamp: data['timestamp'])
-      bomb.save and {bomb: bomb}.to_json or raise
-    rescue JSON::ParserError
-      400
+      data = JSON.parse(request.body.read) rescue Hash.new()
+      bomb_params = Hash.new()
+
+      bomb_params[:url]             = data['url']             || params[:url]
+      bomb_params[:request_params]  = data['request_params']  || params[:request_params]
+      bomb_params[:timestamp]       = data['timestamp']       || params[:timestamp]
+
+      halt 400 if bomb_params[:url].blank? || bomb_params[:timestamp].blank?
+
+      {bomb: @user.bombs.create(bomb_params)}.to_json
     rescue
       500
     end

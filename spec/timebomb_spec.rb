@@ -85,7 +85,17 @@ describe Timebomb do
       end
     end
 
-    context 'with no JSON' do
+    context 'with valid querystring parameters' do
+      it 'creates a new bomb' do
+        post '/bombs/new', bomb_params.merge(token: token)
+
+        expect(last_response).to be_ok and body = JSON.parse(last_response.body)
+        expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
+        expect(body['bomb']['user_id']).to eq user._id.to_s
+      end
+    end
+
+    context 'with no JSON or querystring parameters' do
       it 'does not create a new bomb' do
         post '/bombs/new', token: token
 
