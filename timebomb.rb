@@ -23,7 +23,7 @@ class Timebomb < Sinatra::Base
 
       halt 400 if bomb_params[:url].blank? || bomb_params[:timestamp].blank?
 
-      {bomb: @user.bombs.create(bomb_params)}.to_json
+      bomb = @user.bombs.create(bomb_params) and {bomb: bomb}.to_json or raise
     rescue
       500
     end
