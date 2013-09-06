@@ -3,11 +3,10 @@ require 'bcrypt'
 class User
   include Mongoid::Document
 
-  field :email,         type: String
-  field :password_hash, type: String
-  field :password_salt, type: String
-  field :token,         type: String
-  field :token_salt,    type: String
+  field       :email,         type: String
+  field       :password_hash, type: String
+  field       :password_salt, type: String
+  embeds_many :tokens
 
   attr_accessor :password
 

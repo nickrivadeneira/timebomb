@@ -6,7 +6,11 @@ describe User do
   let(:resource){described_class.create(email: email)}
 
   it 'has fields' do
-    expect(described_class).to have_fields :email, :password_hash, :password_salt, :token, :token_salt
+    expect(described_class).to have_fields :email, :password_hash, :password_salt
+  end
+
+  it 'has embedded tokens' do
+    expect(described_class).to embed_many :tokens
   end
 
   it 'does not have virtualized fields' do
