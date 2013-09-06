@@ -6,6 +6,7 @@ class User
   field       :email,         type: String
   field       :password_hash, type: String
   field       :password_salt, type: String
+  has_many    :bombs
   embeds_many :tokens
 
   attr_accessor :password

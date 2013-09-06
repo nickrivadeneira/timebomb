@@ -9,8 +9,12 @@ describe User do
     expect(described_class).to have_fields :email, :password_hash, :password_salt
   end
 
-  it 'has embedded tokens' do
+  it 'embeds many tokens' do
     expect(described_class).to embed_many :tokens
+  end
+
+  it 'has many bombs' do
+    expect(described_class).to have_many :bombs
   end
 
   it 'does not have virtualized fields' do

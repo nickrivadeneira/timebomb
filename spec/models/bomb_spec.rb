@@ -14,6 +14,10 @@ describe Bomb do
     expect(described_class).to have_fields :url, :request_params, :timestamp
   end
 
+  it 'belongs to user' do
+    expect(described_class).to belong_to :user
+  end
+
   describe 'timed scope' do
     context 'with 2 out-of-scope records and 1 in-scope record' do
       before do

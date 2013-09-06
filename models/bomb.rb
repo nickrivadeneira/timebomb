@@ -3,9 +3,10 @@ require 'httparty'
 class Bomb
   include Mongoid::Document
 
-  field :url,            type: String
-  field :request_params, type: String
-  field :timestamp,      type: Integer
+  field       :url,            type: String
+  field       :request_params, type: String
+  field       :timestamp,      type: Integer
+  belongs_to  :user
 
   def send_request
     self.class.send_request self.url, self.request_params
