@@ -19,6 +19,10 @@ class User
     end
   end
 
+  def self.authenticate_token token
+    where(:'tokens.token' => token).first
+  end
+
   def encrypt_password
     if password.present?
       self.password_salt = BCrypt::Engine.generate_salt

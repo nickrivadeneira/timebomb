@@ -66,4 +66,19 @@ describe User do
       end
     end
   end
+
+  describe 'token authentication' do
+    context 'when token is not present' do
+      it 'should return nothing' do
+        expect(described_class.authenticate_token 'foobar').to be_nil
+      end
+    end
+
+    context 'when token is present' do
+      it 'should return parent user' do
+        token = resource.tokens.create.token
+        expect(described_class.authenticate_token token).to eq resource
+      end
+    end
+  end
 end
