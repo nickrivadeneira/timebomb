@@ -1,7 +1,7 @@
 class Timebomb < Sinatra::Base
   # Authenticate
   before do
-    token = params[:token] || (env['HTTP_AUTHORIZATION'] || '').gsub('Token ', '')
+    token = params[:token] || (env['HTTP_AUTHORIZATION'] || '')[/[\w|-]{22}/]
     halt 401 if token.blank? || (@user = User.authenticate_token(token)).nil?
   end
 
