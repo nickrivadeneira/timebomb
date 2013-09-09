@@ -18,7 +18,7 @@ class Timebomb < Sinatra::Base
       bomb_params = Hash.new()
 
       bomb_params[:url]             = data['url']             || params[:url]
-      bomb_params[:request_params]  = data['request_params']  || params[:request_params]
+      bomb_params[:request_params]  = data['request_params']  || params[:request_params].to_json
       bomb_params[:timestamp]       = data['timestamp']       || params[:timestamp]
 
       halt 400 if bomb_params[:url].blank? || bomb_params[:timestamp].blank?
