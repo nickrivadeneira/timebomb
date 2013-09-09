@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Token do
-  let(:user){User.create}
+  let(:user){User.create(email: 'user@example.com')}
   let(:resource){user.tokens.create}
 
   it 'has fields' do

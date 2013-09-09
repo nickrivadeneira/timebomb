@@ -3,7 +3,14 @@ require 'bcrypt'
 
 describe User do
   let(:email){'user@example.com'}
-  let(:resource){described_class.create(email: email)}
+  let(:password){'foobar'}
+  let(:user_params){
+    {
+      email: email,
+      password: password
+    }
+  }
+  let(:resource){described_class.create(user_params)}
 
   it 'has fields' do
     expect(described_class).to have_fields :email, :password_hash, :password_salt
@@ -21,16 +28,16 @@ describe User do
     expect(described_class).to_not have_fields :password
   end
 
-  context 'when password is not present' do
-    describe 'password encryption' do
-      it 'does nothing' do
-        expect(resource.encrypt_password).to be_nil
-      end
-    end
-  end
+  # Disabled due to password encryption callback.
+  # context 'when password is not present' do
+  #   describe 'password encryption' do
+  #     it 'does nothing' do
+  #       expect(resource.encrypt_password).to be_nil
+  #     end
+  #   end
+  # end
 
   context 'when password is present' do
-    let(:password){'foobar'}
     before{resource.password = password}
 
     describe 'password encryption' do
@@ -82,6 +89,44 @@ describe User do
       it 'should return parent user' do
         token = resource.tokens.create.token
         expect(described_class.authenticate_token token).to eq resource
+      end
+    end
+  end
+
+  describe 'validation' do
+    it 'validates uniqueness for email' do
+      expect(described_class).to validate_uniqueness_of :email
+    end
+
+    it 'validates presence for email' do
+      expect(described_class).to validate_presence_of :email
+    end
+
+    it 'prevents duplicate email addresses' do
+      resource1 = described_class.create(email: email)
+      resource2 = resource1.dup
+
+      expect(resource1).to be_valid
+      expect(resource2).to_not be_valid
+    end
+  end
+
+  describe 'callbacks' do
+    before{@new_resource = described_class.new(email: email, password: password)}
+
+    context 'before create' do
+      it 'encrypts the password' do
+        expect(@new_resource.password_hash).to be_nil
+        @new_resource.save
+        expect(@new_resource.password_hash).to_not be_nil
+      end
+    end
+
+    context 'after create' do
+      it 'creates a token' do
+        expect(@new_resource.tokens).to be_empty
+        @new_resource.save
+        expect(@new_resource.tokens).to_not be_empty
       end
     end
   end

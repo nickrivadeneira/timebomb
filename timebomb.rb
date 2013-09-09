@@ -1,5 +1,5 @@
 class Timebomb < Sinatra::Base
-  before do
+  before '/bombs*' do
     @request_body = env['rack.input'].read
 
     # Authenticate
@@ -45,6 +45,16 @@ class Timebomb < Sinatra::Base
       bomb.destroy and response or raise
     rescue Mongoid::Errors::DocumentNotFound
       404
+    end
+  end
+
+  get '/users/new' do
+
+  end
+
+  post '/users/new' do
+    if params[:email].present? && params[:password].present?
+      User.create email: params[:email], password: params[:password]
     end
   end
 end

@@ -2,6 +2,8 @@ require 'bcrypt'
 
 class User
   include Mongoid::Document
+  before_create :encrypt_password
+  after_create  {self.tokens.create}
 
   field       :email,         type: String
   field       :password_hash, type: String
@@ -10,6 +12,9 @@ class User
   embeds_many :tokens
 
   attr_accessor :password
+
+  validates :email, uniqueness: true
+  validates :email, presence: true
 
   def self.authenticate email, password
     user = where(email: email).first
