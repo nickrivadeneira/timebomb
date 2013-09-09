@@ -1,7 +1,11 @@
 class Timebomb < Sinatra::Base
-  # Authenticate
   before do
-    token = params[:token] || (env['HTTP_AUTHORIZATION'] || '')[/[\w|-]{22}/]
+    @request_body = env['rack.input'].read
+
+    # Authenticate
+    token = params[:token] ||
+            JSON.parse(@request_body)['token'] rescue nil ||
+            env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
     halt 401 if token.blank? || (@user = User.authenticate_token(token)).nil?
   end
 
@@ -14,7 +18,7 @@ class Timebomb < Sinatra::Base
   # Create
   post '/bombs/new' do
     begin
-      data = JSON.parse(request.body.read) rescue Hash.new()
+      data = JSON.parse(@request_body) rescue Hash.new()
       bomb_params = Hash.new()
 
       bomb_params[:url]             = data['url']             || params[:url]

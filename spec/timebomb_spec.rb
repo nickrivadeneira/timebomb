@@ -30,6 +30,13 @@ describe Timebomb do
       end
     end
 
+    context 'with a valid token via body parameters' do
+      it 'is successful' do
+        post '/bombs/new', bomb_params.merge(token: token).to_json, {'Content-Type' => 'application/json'}
+        expect(last_response).to be_ok
+      end
+    end
+
     context 'with an invalid token' do
       it 'returns a 401 status' do
         get '/bombs'
