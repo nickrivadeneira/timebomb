@@ -7,6 +7,7 @@ gem 'httparty'
 gem 'clockwork'
 gem 'stalker'
 gem 'bcrypt-ruby'
+gem 'haml'
 
 group :test do
   gem 'rspec'

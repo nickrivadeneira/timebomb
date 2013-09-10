@@ -48,11 +48,12 @@ class Timebomb < Sinatra::Base
     end
   end
 
-  get '/users/new' do
-
+  get '/signup' do
+    haml :users_new, format: :html5
   end
 
   post '/users/new' do
+    puts params
     if params[:email].present? && params[:password].present?
       User.create email: params[:email], password: params[:password]
     end
