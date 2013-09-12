@@ -1,0 +1,13 @@
+%html
+  %head
+    %meta{name: "viewport", content: "width=device-width, initial-scale=1.0"}
+    %title Timebomb.io
+    %link{rel: "stylesheet", href: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"}
+    %script{src: "//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"}
+
+  %body
+    %nav.navbar.navbar-default.navbar-static-top.navbar-inverse{role: 'navigation'}
+      .container
+        .navbar-header
+          %a.navbar-brand{href: "/"} Timebomb
+    =yield

@@ -1,5 +1,6 @@
 class Timebomb < Sinatra::Base
   enable :sessions
+  set :haml, format: :html5, layout: :layout
 
   before '/bombs*' do
     @request_body = env['rack.input'].read
@@ -9,7 +10,7 @@ class Timebomb < Sinatra::Base
             params[:token] ||
             JSON.parse(@request_body)['token'] rescue nil ||
             env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
-    halt 401, haml(:sessions_new, format: :html5) if token.blank? || (@user = User.authenticate_token(token)).nil?
+    halt 401, haml(:sessions_new) if token.blank? || (@user = User.authenticate_token(token)).nil?
   end
 
   # Index
@@ -53,7 +54,7 @@ class Timebomb < Sinatra::Base
 
   # User registration
   get '/signup' do
-    haml :users_new, format: :html5
+    haml :users_new
   end
 
   post '/signup' do
@@ -67,7 +68,7 @@ class Timebomb < Sinatra::Base
     if session[:token].present?
       redirect '/bombs'
     else
-      haml :sessions_new, format: :html5
+      haml :sessions_new
     end
   end
 
