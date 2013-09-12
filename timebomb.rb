@@ -1,12 +1,15 @@
 class Timebomb < Sinatra::Base
+  enable :sessions
+
   before '/bombs*' do
     @request_body = env['rack.input'].read
 
     # Authenticate
-    token = params[:token] ||
+    token = session[:token] ||
+            params[:token] ||
             JSON.parse(@request_body)['token'] rescue nil ||
             env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
-    halt 401 if token.blank? || (@user = User.authenticate_token(token)).nil?
+    halt 401, haml(:sessions_new, format: :html5) if token.blank? || (@user = User.authenticate_token(token)).nil?
   end
 
   # Index
@@ -48,14 +51,40 @@ class Timebomb < Sinatra::Base
     end
   end
 
+  # User registration
   get '/signup' do
     haml :users_new, format: :html5
   end
 
-  post '/users/new' do
-    puts params
+  post '/signup' do
     if params[:email].present? && params[:password].present?
       User.create email: params[:email], password: params[:password]
     end
+  end
+
+  # Sessions
+  get '/signin' do
+    if session[:token].present?
+      redirect '/bombs'
+    else
+      haml :sessions_new, format: :html5
+    end
+  end
+
+  post '/signin' do
+    if params[:email].present? && params[:password].present?
+      user = User.authenticate params[:email], params[:password]
+      if user
+        session[:token] = user.tokens.first.token
+        redirect '/bombs'
+      else
+        redirect '/signin'
+      end
+    end
+  end
+
+  get '/signout' do
+    session[:token] = nil
+    redirect '/signin'
   end
 end
