@@ -2,15 +2,17 @@ class Timebomb < Sinatra::Base
   enable :sessions
   set :haml, format: :html5, layout: :layout
 
-  before '/bombs*' do
-    @request_body = env['rack.input'].read
+  ['/bombs*', '/token*'].each do |path|
+    before path do
+      @request_body = env['rack.input'].read
 
-    # Authenticate
-    token = session[:token] ||
-            params[:token] ||
-            JSON.parse(@request_body)['token'] rescue nil ||
-            env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
-    halt 401, haml(:sessions_new) if token.blank? || (@user = User.authenticate_token(token)).nil?
+      # Authenticate
+      token = session[:token] ||
+              params[:token] ||
+              JSON.parse(@request_body)['token'] rescue nil ||
+              env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
+      halt 401, haml(:sessions_new) if token.blank? || (@user = User.authenticate_token(token)).nil?
+    end
   end
 
   # Index
@@ -52,6 +54,10 @@ class Timebomb < Sinatra::Base
     end
   end
 
+  get '/tokens' do
+    {tokens: @user.tokens}.to_json
+  end
+
   # User registration
   get '/signup' do
     haml :users_new
@@ -59,7 +65,10 @@ class Timebomb < Sinatra::Base
 
   post '/signup' do
     if params[:email].present? && params[:password].present?
-      User.create email: params[:email], password: params[:password]
+      if (user = User.create email: params[:email], password: params[:password])
+        session[:token] = user.tokens.first.token
+        redirect '/bombs'
+      end
     end
   end
 
