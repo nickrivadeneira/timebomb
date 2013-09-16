@@ -4,6 +4,7 @@ class Timebomb < Sinatra::Base
 
   ['/bombs*', '/token*'].each do |path|
     before path do
+      cors_headers
       @request_body = env['rack.input'].read
 
       # Authenticate
@@ -15,20 +16,13 @@ class Timebomb < Sinatra::Base
     end
   end
 
-  # Handle pre-flight for CORS requests
-  options '/bombs' do
-    cors_headers
-  end
-
   # Index
   get '/bombs' do
-    cors_headers
     {bombs: @user.bombs}.to_json
   end
 
   # Create
   post '/bombs' do
-    cors_headers
     data = JSON.parse(@request_body) rescue Hash.new()
     bomb_params = Hash.new()
 
@@ -106,8 +100,11 @@ class Timebomb < Sinatra::Base
   end
 
   private
+    # Approve pre-flight and return if CORS. Do not check authorization.
     def cors_headers
       headers 'Access-Control-Allow-Origin' => '*',
-              'Access-Control-Allow-Headers' => 'Content-Type'
+              'Access-Control-Allow-Headers' => 'Content-Type, Authorization'
+
+      halt 200 if request.request_method == 'OPTIONS'
     end
 end
