@@ -15,13 +15,20 @@ class Timebomb < Sinatra::Base
     end
   end
 
+  # Handle pre-flight for CORS requests
+  options '/bombs' do
+    cors_headers
+  end
+
   # Index
   get '/bombs' do
+    cors_headers
     {bombs: @user.bombs}.to_json
   end
 
   # Create
-  post '/bombs/new' do
+  post '/bombs' do
+    cors_headers
     data = JSON.parse(@request_body) rescue Hash.new()
     bomb_params = Hash.new()
 
@@ -63,7 +70,7 @@ class Timebomb < Sinatra::Base
     haml :users_new
   end
 
-  post '/signup' do
+  post '/users' do
     if params[:email].present? && params[:password].present?
       if (user = User.create email: params[:email], password: params[:password])
         session[:token] = user.tokens.first.token
@@ -97,4 +104,10 @@ class Timebomb < Sinatra::Base
     session[:token] = nil
     redirect '/signin'
   end
+
+  private
+    def cors_headers
+      headers 'Access-Control-Allow-Origin' => '*',
+              'Access-Control-Allow-Headers' => 'Content-Type'
+    end
 end

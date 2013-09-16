@@ -2,7 +2,7 @@
 Timebomb is a simple HTTP request scheduling app. Users schedule requests via Timebomb's REST API.
 
 ## Quick Start
-The easiest way to use Timebomb is as a service. Simply send a `POST` request to `/bombs/new` with three values: `request_params` as JSON, `timestamp`, and `url`. These can be sent in the request body as JSON or as querystring parameters.
+The easiest way to use Timebomb is as a service. Simply send a `POST` request to `/bombs` with three values: `request_params` as JSON, `timestamp`, and `url`. These can be sent in the request body as JSON or as querystring parameters.
 
 Sample parameters:
 ``` json
@@ -19,11 +19,11 @@ Sample parameters:
 
 In `curl` with body JSON:
 ``` shell
-curl -X POST -H "Content-Type: application/json" -d '{"request_params":{"foo":1,"bar":2},"timestamp":505371600,"url":"http://example.com"}' http://localhost:9292/bombs/new
+curl -X POST -H "Content-Type: application/json" -d '{"request_params":{"foo":1,"bar":2},"timestamp":505371600,"url":"http://example.com"}' http://localhost:9292/bombs
 ```
 In `curl` with querystring parameters:
 ``` shell
-curl --data "request_params=%7B%22foo%22%3A1%2C%22bar%22%3A2%7D&timestamp=505371600&url=http%3A%2F%2Fexample.com" http://localhost:9292/bombs/new
+curl --data "request_params=%7B%22foo%22%3A1%2C%22bar%22%3A2%7D&timestamp=505371600&url=http%3A%2F%2Fexample.com" http://localhost:9292/bombs
 ```
 #### The Response
 If the request is successful, the response will be a JSON representation of the `Bomb`. If it is unsuccessful, you'll receive a simple HTTP response with the appropriate status code but no body.
@@ -65,7 +65,7 @@ For the purposes of throttling,  Timebomb uses a simple token authentication sys
 
 As a parameter:
 ```
-http://localhost:9292/bombs/new?token=RWh2RWWpAFpBGklr-DvP4Q
+http://localhost:9292/bombs?token=RWh2RWWpAFpBGklr-DvP4Q
 ```
 
 In the header:

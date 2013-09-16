@@ -39,7 +39,7 @@ describe Timebomb do
 
       context 'with a valid token via body parameters' do
         it 'is successful' do
-          post '/bombs/new', bomb_params.merge(token: token).to_json, {'Content-Type' => 'application/json'}
+          post '/bombs', bomb_params.merge(token: token).to_json, {'Content-Type' => 'application/json'}
           expect(last_response).to be_ok
         end
       end
@@ -49,7 +49,7 @@ describe Timebomb do
           get '/bombs'
           expect(last_response.status).to eq 401
 
-          post '/bombs/new'
+          post '/bombs'
           expect(last_response.status).to eq 401
 
           get '/bombs/foo'
@@ -64,14 +64,14 @@ describe Timebomb do
     context 'for user' do
       context 'creation page' do
         it 'should not occur' do
-          get '/users/new'
+          get '/signup'
           expect(last_response).to be_ok
         end
       end
 
       context 'creation' do
         it 'should not occur' do
-          post '/users/new'
+          post '/users'
           expect(last_response).to be_ok
         end
       end
@@ -109,7 +109,7 @@ describe Timebomb do
     describe 'creation' do
       context 'with valid JSON' do
         it 'creates a new bomb' do
-          post '/bombs/new?token=' + token, bomb_params.to_json, {'Content-Type' => 'application/json'}
+          post '/bombs?token=' + token, bomb_params.to_json, {'Content-Type' => 'application/json'}
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
           expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
@@ -119,7 +119,7 @@ describe Timebomb do
 
       context 'with valid querystring parameters' do
         it 'creates a new bomb' do
-          post '/bombs/new', bomb_params.merge(token: token)
+          post '/bombs', bomb_params.merge(token: token)
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
           expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
@@ -129,7 +129,7 @@ describe Timebomb do
 
       context 'with no JSON or querystring parameters' do
         it 'does not create a new bomb' do
-          post '/bombs/new', token: token
+          post '/bombs', token: token
 
           expect(last_response.status).to eq 400
         end
@@ -201,7 +201,7 @@ describe Timebomb do
   describe 'user' do
     describe 'creation' do
       it 'should create a user' do
-        post '/users/new', user_params
+        post '/users', user_params
         expect(User.where(email: user_params[:email]).first).to_not be_nil
       end
     end
