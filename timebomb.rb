@@ -10,7 +10,7 @@ class Timebomb < Sinatra::Base
       # Authenticate
       token = session[:token] ||
               params[:token] ||
-              JSON.parse(@request_body)['token'] rescue nil ||
+              (JSON.parse(@request_body)['token'] rescue nil) ||
               env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
       halt 401, haml(:sessions_new) if token.blank? || (@user = User.authenticate_token(token)).nil?
     end
