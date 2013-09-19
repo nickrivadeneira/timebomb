@@ -18,7 +18,7 @@ class Timebomb < Sinatra::Base
 
   # Index
   get '/bombs' do
-    {bombs: @user.bombs}.to_json
+    @user.bombs.to_json
   end
 
   # Create
@@ -32,13 +32,13 @@ class Timebomb < Sinatra::Base
 
     halt 400 if bomb_params[:url].blank? || bomb_params[:timestamp].blank?
 
-    bomb = @user.bombs.create(bomb_params) and {bomb: bomb}.to_json or raise
+    bomb = @user.bombs.create(bomb_params) and bomb.to_json or raise
   end
 
   # Show
   get '/bombs/:id' do
     begin
-      {bomb: @user.bombs.find(params[:id])}.to_json
+      @user.bombs.find(params[:id]).to_json
     rescue Mongoid::Errors::DocumentNotFound
       404
     end
@@ -48,7 +48,7 @@ class Timebomb < Sinatra::Base
   delete '/bombs/:id' do
     begin
       bomb = @user.bombs.find(params[:id])
-      response = {bomb: bomb}.to_json
+      response = bomb.to_json
       bomb.destroy and response or raise
     rescue Mongoid::Errors::DocumentNotFound
       404
@@ -56,7 +56,7 @@ class Timebomb < Sinatra::Base
   end
 
   get '/tokens' do
-    {tokens: @user.tokens}.to_json
+    @user.tokens.to_json
   end
 
   # User registration
