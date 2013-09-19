@@ -10,4 +10,12 @@
       .container
         .navbar-header
           %a.navbar-brand{href: "/"} Timebomb
+        %ul.nav.navbar-nav.navbar-right
+          -if @user.present?
+            %li=@user.email
+          -else
+            %li
+              %a{href: "/signup"} Register
+            %li
+              %a{href: "/signin"} Sign In
     =yield

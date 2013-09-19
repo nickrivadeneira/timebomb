@@ -16,6 +16,10 @@ class Timebomb < Sinatra::Base
     end
   end
 
+  get '/' do
+    redirect '/bombs'
+  end
+
   # Index
   get '/bombs' do
     @user.bombs.to_json
