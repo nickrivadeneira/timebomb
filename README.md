@@ -29,13 +29,11 @@ curl --data "request_params=%7B%22foo%22%3A1%2C%22bar%22%3A2%7D&timestamp=505371
 If the request is successful, the response will be a JSON representation of the `Bomb`. If it is unsuccessful, you'll receive a simple HTTP response with the appropriate status code but no body.
 ``` json
 {
-  "bomb": {
-    "_id": "522a4f1030de59a7a9000001",
-    "request_params": "{\"foo\":1,\"bar\":2}",
-    "timestamp":505371600,
-    "url": "http://example.com",
-    "user_id": "522a4ee130de5996ac000001"
-  }
+  "_id": "522a4f1030de59a7a9000001",
+  "request_params": "{\"foo\":1,\"bar\":2}",
+  "timestamp":505371600,
+  "url": "http://example.com",
+  "user_id": "522a4ee130de5996ac000001"
 }
 ```
 ### Retrieving a Bomb
@@ -49,13 +47,11 @@ curl http://localhost:9292/bombs/522a4f1030de59a7a9000001
 ### The Response
 ``` json
 {
-  "bomb": {
-    "_id": "522a4f1030de59a7a9000001",
-    "request_params": "{\"foo\":1,\"bar\":2}",
-    "timestamp":505371600,
-    "url": "http://example.com",
-    "user_id": "522a4ee130de5996ac000001"
-  }
+  "_id": "522a4f1030de59a7a9000001",
+  "request_params": "{\"foo\":1,\"bar\":2}",
+  "timestamp":505371600,
+  "url": "http://example.com",
+  "user_id": "522a4ee130de5996ac000001"
 }
 ```
 
