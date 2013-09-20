@@ -9,8 +9,11 @@ describe Timebomb do
     {
       url:            'http://example.com',
       request_params: {foo: 1, bar: 2}.to_json,
-      timestamp:      Time.now.to_i
+      timestamp:      Time.now.to_i,
     }
+  }
+  let(:bomb_params_w_user){
+    bomb_params.merge(user_id: Moped::BSON::ObjectId.new())
   }
   let(:user_params){
     {
@@ -18,8 +21,8 @@ describe Timebomb do
       password: 'foobar'
     }
   }
-  let(:user){User.create(user_params)}
-  let(:token){user.tokens.create.token}
+  let(:user){User.create!(user_params)}
+  let(:token){user.tokens.create!.token}
 
   describe 'authentication' do
     context 'for bombs' do
@@ -85,22 +88,22 @@ describe Timebomb do
           get '/bombs', token: token
 
           expect(last_response).to be_ok
-          expect(last_response.body).to eq({bombs: []}.to_json)
+          expect(last_response.body).to eq([].to_json)
         end
       end
 
       context 'when 5 bombs exist' do
         before do
-          3.times{user.bombs.create(bomb_params)}
-          2.times{Bomb.create}
+          3.times{user.bombs.create!(bomb_params)}
+          2.times{Bomb.create!(bomb_params_w_user)}
         end
 
         it 'returns only the user\'s 3 bombs' do
           get '/bombs', token: token
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-          expect(body['bombs'].size).to eq 3
-          expect(body['bombs'].map{|b| b['_id']}.uniq.size).to eq 3
+          expect(body.size).to eq 3
+          expect(body.map{|b| b['_id']}.uniq.size).to eq 3
           expect(Bomb.count).to eq 5
         end
       end
@@ -112,8 +115,8 @@ describe Timebomb do
           post '/bombs?token=' + token, bomb_params.to_json, {'Content-Type' => 'application/json'}
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-          expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
-          expect(body['bomb']['user_id']).to eq user._id.to_s
+          expect(body['timestamp']).to eq bomb_params[:timestamp]
+          expect(body['user_id']).to eq user._id.to_s
         end
       end
 
@@ -122,8 +125,8 @@ describe Timebomb do
           post '/bombs', bomb_params.merge(token: token)
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-          expect(body['bomb']['timestamp']).to eq bomb_params[:timestamp]
-          expect(body['bomb']['user_id']).to eq user._id.to_s
+          expect(body['timestamp']).to eq bomb_params[:timestamp]
+          expect(body['user_id']).to eq user._id.to_s
         end
       end
 
@@ -139,20 +142,20 @@ describe Timebomb do
     describe 'show' do
       context 'authorized existing bomb' do
         it 'returns the user\'s bomb' do
-          bomb = user.bombs.create(bomb_params)
+          bomb = user.bombs.create!(bomb_params)
           get '/bombs/' + bomb._id.to_s, token: token
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-          expect(body['bomb']['_id']).to eq(bomb._id.to_s)
-          expect(body['bomb']['url']).to eq(bomb.url)
-          expect(body['bomb']['request_params']).to eq(bomb.request_params)
-          expect(body['bomb']['timestamp']).to eq(bomb.timestamp)
+          expect(body['_id']).to eq(bomb._id.to_s)
+          expect(body['url']).to eq(bomb.url)
+          expect(body['request_params']).to eq(bomb.request_params)
+          expect(body['timestamp']).to eq(bomb.timestamp)
         end
       end
 
       context 'unauthorized existing bomb' do
         it 'returns 404' do
-          bomb = Bomb.create
+          bomb = Bomb.create! bomb_params_w_user
           get '/bombs/' + bomb._id.to_s, token: token
 
           expect(last_response.status).to be 404
@@ -171,17 +174,17 @@ describe Timebomb do
     describe 'delete' do
       context 'authorized existing bomb' do
         it 'deletes and returns the bomb' do
-          bomb = user.bombs.create bomb_params
+          bomb = user.bombs.create! bomb_params
           delete '/bombs/' + bomb._id.to_s, token: token
 
           expect(last_response).to be_ok and body = JSON.parse(last_response.body)
-          expect(body['bomb']['_id']).to eq bomb._id.to_s
+          expect(body['_id']).to eq bomb._id.to_s
         end
       end
 
       context 'unauthorized existing bomb' do
         it 'returns 404' do
-          bomb = Bomb.create
+          bomb = Bomb.create! bomb_params_w_user
           delete '/bombs/' + bomb._id.to_s, token: token
 
           expect(last_response.status).to eq 404

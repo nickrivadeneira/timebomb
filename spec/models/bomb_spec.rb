@@ -1,12 +1,13 @@
 require 'spec_helper'
 
 describe Bomb do
-  let(:timestamp){Time.now.to_i}
+  let(:timestamp){1.day.from_now.to_i}
   let(:params){
     {
       url:            'http://example.com',
       request_params: {foo: 1, bar: 2}.to_json,
-      timestamp:      timestamp
+      timestamp:      timestamp,
+      user_id:        Moped::BSON::ObjectId.new()
     }
   }
 
@@ -24,7 +25,7 @@ describe Bomb do
         interval_minutes = 60
         offsets = [-60 * interval_minutes * 2, 0, 60 * interval_minutes * 2]
         offsets.each do |offset|
-          described_class.create(timestamp: timestamp + offset)
+          described_class.create!(params.merge(timestamp: timestamp + offset))
         end
       end
 
