@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'base64'
 
 describe Timebomb do
   def app
@@ -12,13 +13,13 @@ describe Timebomb do
       timestamp:      Time.now.to_i,
     }
   }
-  let(:bomb_params_w_user){
-    bomb_params.merge(user_id: Moped::BSON::ObjectId.new())
-  }
+  let(:bomb_params_w_user){bomb_params.merge(user_id: Moped::BSON::ObjectId.new())}
+  let(:email){'user@example.com'}
+  let(:password){'foobar'}
   let(:user_params){
     {
-      email:    'user@example.com',
-      password: 'foobar'
+      email:    email,
+      password: password
     }
   }
   let(:user){User.create!(user_params)}
@@ -33,6 +34,13 @@ describe Timebomb do
         end
       end
 
+      context 'with a valid token via body parameters' do
+        it 'is successful' do
+          post '/bombs', bomb_params.merge(token: token).to_json, {'Content-Type' => 'application/json'}
+          expect(last_response).to be_ok
+        end
+      end
+
       context 'with a valid token via header' do
         it 'is successful' do
           get '/bombs', nil, 'HTTP_AUTHORIZATION' => 'Token ' + token
@@ -40,9 +48,11 @@ describe Timebomb do
         end
       end
 
-      context 'with a valid token via body parameters' do
+      context 'with valid credentials via Basic header authentication' do
         it 'is successful' do
-          post '/bombs', bomb_params.merge(token: token).to_json, {'Content-Type' => 'application/json'}
+          user
+          encoded = Base64.encode64(email + ':' + password)
+          get '/bombs', nil, 'HTTP_AUTHORIZATION' => 'Basic ' + encoded
           expect(last_response).to be_ok
         end
       end
