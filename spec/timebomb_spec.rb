@@ -140,6 +140,22 @@ describe Timebomb do
         end
       end
 
+      context 'with invalid timestamp' do
+        it 'does not create a new bomb' do
+          post '/bombs', bomb_params.merge(timestamp: 1, token: token)
+
+          expect(last_response.status).to eq 400
+        end
+      end
+
+      context 'with invalid JSON' do
+        it 'does not create a new bomb' do
+          post '/bombs', bomb_params.merge(request_params: 'foobar', token: token)
+
+          expect(last_response.status).to eq 400
+        end
+      end
+
       context 'with no JSON or querystring parameters' do
         it 'does not create a new bomb' do
           post '/bombs', token: token
