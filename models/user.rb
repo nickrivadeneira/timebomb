@@ -1,4 +1,5 @@
 require 'bcrypt'
+require 'base64'
 
 class User
   include Mongoid::Document
@@ -23,6 +24,12 @@ class User
     else
       nil
     end
+  end
+
+  def self.authenticate_base64 enc
+    plain = Base64.decode64 enc
+    email, *password = plain.split(/:/)
+    authenticate email, password.join
   end
 
   def self.authenticate_token token

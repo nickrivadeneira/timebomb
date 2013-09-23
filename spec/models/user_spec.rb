@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'bcrypt'
+require 'base64'
 
 describe User do
   let(:email){'user@example.com'}
@@ -78,15 +79,32 @@ describe User do
     end
   end
 
+  describe 'basic authentication' do
+    before{resource}
+    context 'with valid credentials' do
+      it 'returns the correct user' do
+        encoded = Base64.encode64(email + ':' + password)
+        expect(described_class.authenticate_base64 encoded).to eq resource
+      end
+    end
+
+    context 'with invalid credentials' do
+      it 'does not return the user' do
+        encoded = Base64.encode64(email + ':' + password + 'baz')
+        expect(described_class.authenticate_base64 encoded).to be_nil
+      end
+    end
+  end
+
   describe 'token authentication' do
     context 'when token is not present' do
-      it 'should return nothing' do
+      it 'returns nothing' do
         expect(described_class.authenticate_token 'foobar').to be_nil
       end
     end
 
     context 'when token is present' do
-      it 'should return parent user' do
+      it 'returns parent user' do
         token = resource.tokens.create.token
         expect(described_class.authenticate_token token).to eq resource
       end
