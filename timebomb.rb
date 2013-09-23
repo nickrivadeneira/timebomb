@@ -10,8 +10,17 @@ class Timebomb < Sinatra::Base
       # Authenticate
       token = session[:token] ||
               params[:token] ||
-              (JSON.parse(@request_body)['token'] rescue nil) ||
-              env['HTTP_AUTHORIZATION'][/[\w|-]{22}/] rescue nil
+              (JSON.parse(@request_body)['token'] rescue nil)
+
+      # If no token exists in session or was passed via parameters or request body, check HTTP headers.
+      if token.blank? && (header_auth = env['HTTP_AUTHORIZATION'])
+        if (credentials = /(Basic\s)(.*)/.match(header_auth))
+          @user = User.authenticate_base64(credentials[2]) and pass
+        else
+          token = header_auth[/[\w|-]{22}/]
+        end
+      end
+
       halt 401, haml(:sessions_new) if token.blank? || (@user = User.authenticate_token(token)).nil?
     end
   end
